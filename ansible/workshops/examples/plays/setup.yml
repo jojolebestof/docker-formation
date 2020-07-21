@@ -1,0 +1,11 @@
+- hosts: all
+  gather_facts: False
+  tasks:
+    - name: Check python is installed
+      raw: (test -e "$(which python)" || test -e "$(which python3)" ) || (apt -y update && apt install -y python-minimal)
+    - name: "Install dependencies"
+      apt:
+        update_cache: yes
+        pkg:
+          - unzip
+          - vim

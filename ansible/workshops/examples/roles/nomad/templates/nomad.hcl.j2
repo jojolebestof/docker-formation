@@ -1,0 +1,59 @@
+datacenter = "DO-FRA"
+
+data_dir = "/var/lib/nomad"
+
+bind_addr = "{{ network_private_ipv4 }}"
+
+advertise {
+  # We need to specify our host's IP because we can't
+  # advertise 0.0.0.0 to other nodes in our cluster.
+
+  http = "{{ network_private_ipv4 }}:4646"
+  rpc  = "{{ network_private_ipv4 }}:4647"
+  serf = "{{ network_private_ipv4 }}:4648"
+}
+
+server {
+  enabled = {{ 'true' if nomad_is_server else 'false' }}
+  bootstrap_expect = 1
+}
+
+client {
+  enabled = {{ 'true' if nomad_is_client else 'false' }}
+
+  {% if not nomad_is_server %}
+  server_join {
+    retry_join = [
+      "{{ hostvars['nomad-node-01']['ansible_' + network_private_interface]['ipv4'].address }}"
+    ]
+    retry_max = 3
+    retry_interval = "15s"
+  }
+  {% endif %}
+
+
+  options {
+    # Allow jobs to run as root
+    "user.blacklist" = ""
+
+    # Allow rawexec jobs
+    "driver.raw_exec.enable" = "1"
+
+    # Allow privileged docker jobs
+    "docker.privileged.enabled" = "true"
+  }
+
+}
+
+consul {
+  address = "{{ network_private_ipv4 }}:8500"
+}
+
+telemetry {
+  collection_interval = "1s"
+  # disable_hostname = true
+  prometheus_metrics = true
+  publish_allocation_metrics = true
+  publish_node_metrics = true
+}
+

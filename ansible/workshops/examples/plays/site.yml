@@ -1,0 +1,17 @@
+- hosts: all
+  roles:
+    - roles/setup
+    - roles/traefik
+  post_tasks:
+    - name: Reboot the server
+      command: "/sbin/reboot"
+    - name: Wait for server to come back
+      wait_for: host='{{ inventory_hostname }}' port='22'
+      sudo: no
+      delegate_to: localhost
+    - name: Wait for services
+      wait_for: port='{{ item }}' delay='5' timeout='600'
+      with_items:
+        - "80"
+        - "443"
+        - "8080"

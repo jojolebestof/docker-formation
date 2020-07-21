@@ -1,0 +1,7 @@
+---
+- name: Download and extract traefik if needed
+  unarchive:
+    src: "https://github.com/containous/traefik/releases/download/v{{ traefik_version }}/traefik_v{{ traefik_version }}_linux_amd64.tar.gz"
+    dest: /usr/local/bin
+    creates: "traefik_v{{ traefik_version }}_linux_amd64.tar.gz"
+    remote_src: yes

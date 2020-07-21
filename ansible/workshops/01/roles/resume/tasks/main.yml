@@ -1,0 +1,6 @@
+---
+- name: Templating jinja file
+  template:
+    src: "file.j2"
+    dest: "/tmp/resume.md"
+    mode: 0644

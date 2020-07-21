@@ -1,0 +1,12 @@
+# This unit file is retrieved from traefik github repository
+# @see https://raw.githubusercontent.com/containous/traefik/master/contrib/systemd/traefik.service
+[Unit]
+Description=Traefik
+
+[Service]
+Type=notify
+ExecStart=/url/local/bin/traefik --configfile=/etc/traefik/traefik.toml
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
